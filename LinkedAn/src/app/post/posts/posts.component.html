@@ -1,0 +1,181 @@
+<div class="container-fluid">
+    <mat-tab-group animationDuration="0ms">
+        <mat-tab label="Community Posts">
+            <div class="row" style="width: 100%;">
+                <div class="col-md-3 mt-3" *ngFor="let post of posts">
+                    <mat-card class="mat-card-live">
+                        <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 35px;">
+                            <span style="text-transform: uppercase; font-size: 120%; color: rgb(4, 4, 179); line-height: 100%;">{{ post.titulo }}</span>
+                        </mat-card-title>
+                        <mat-card-content class="border border-primary" style="word-wrap: break-word; min-height: 250px;">
+                            <span style="font-size: 100%; font-family: Arial, Helvetica, sans-serif;">{{ post.conteudo }}</span>
+                        </mat-card-content>
+                        <mat-chip class="mat-chip-date">
+                            <span style="font-size: 0.75rem;">data do post: {{ post.data | localDateTime }}</span>
+                        </mat-chip>
+                        <div style="margin-left: 85%; margin-right: 15%;">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="getLikedPost(post.id)">
+                                <mat-icon style="height:45px !important; width: 45px !important; font-size:50px !important;">menu</mat-icon>
+                            </button>
+
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item color="primary">
+                                    <mat-icon>favorite</mat-icon>
+                                    <span>Likes: {{post.qtdLikes}}</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <div *ngIf="currentLike != undefined; else undef">
+                                        <button mat-icon-button color="primary" (click)="deleteLike(currentLike.id)" aria-label="Like this post.">
+                                            <mat-icon>thumb_down</mat-icon>
+                                        </button>
+                                        Unlike this post
+                                    </div>
+                                    <ng-template #undef>
+                                        <button mat-icon-button color="primary" (click)="likePost(post.id)" aria-label="Like this post.">
+                                            <mat-icon>thumb_up</mat-icon>
+                                        </button>
+                                        Like this post
+                                    </ng-template>
+                                </button>
+                                <button mat-menu-item>
+                                    <mat-icon>message</mat-icon>
+                                    <span>Sent a message</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Liked Posts">
+            <div class="row" style="width: 100%;">
+                <div class="col-md-3 mt-3" *ngFor="let post of userLikes">
+                    <mat-card class="mat-card-live">
+                        <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 35px;">
+                            <span style="text-transform: uppercase; font-size: 120%; color: rgb(4, 4, 179); line-height: 100%;">{{ post.post.titulo }}</span>
+                        </mat-card-title>
+                        <mat-card-content class="border border-primary" style="word-wrap: break-word; min-height: 250px;">
+                            <span style="font-size: 100%; font-family: Arial, Helvetica, sans-serif;">{{ post.post.conteudo }}</span>
+                        </mat-card-content>
+                        <mat-chip class="mat-chip-date">
+                            <span style="font-size: 0.75rem;">data do post: {{ post.post.data | localDateTime }}</span>
+                        </mat-chip>
+                        <div style="margin-left: 85%; margin-right: 15%;">
+                            <button mat-icon-button [matMenuTriggerFor]="menuMyPosts">
+                                <mat-icon style="height:45px !important; width: 45px !important; font-size:50px !important;">menu</mat-icon>
+                            </button>
+
+                            <mat-menu #menuMyPosts="matMenu">
+                                <button mat-menu-item color="primary">
+                                    <mat-icon>favorite</mat-icon>
+                                    <span>Likes: {{post.post.qtdLikes}}</span>
+                                </button>
+                                <button mat-menu-item (click)="deleteLike(post.id)">
+                                    <mat-icon>thumb_down</mat-icon>
+                                    <span>Unlike this</span>
+                                </button>
+                            </mat-menu>
+
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Messenger">
+            <div class="row" style="width: 100%;">
+                <mat-tab-group animationDuration="0ms"> 
+                    <mat-tab label="Usuários">
+                        <div class="col-md-3 mt-3" *ngFor="let user of users">
+                            <mat-card class="mat-card-live">
+                                <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 20px;">
+                                    <span style="text-transform: uppercase; font-size: 100%; color: rgb(4, 4, 179); line-height: 100%;"> {{ user.userName }} </span>
+                                    <button mat-menu-item (click)="sendMessage(user.userName)">
+                                        <mat-icon>input</mat-icon>
+                                        <span>Enviar Mensagem</span>
+                                    </button>
+                                </mat-card-title> 
+                            </mat-card>
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="Mensagens recebidas">
+                        <div class="col-md-3 mt-3" *ngFor="let message of receivedMessages">
+                            <mat-card class="mat-card-live">
+                                <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 20px;">
+                                    <span style="text-transform: uppercase; font-size: 100%; color: rgb(4, 4, 179); line-height: 100%;"> {{ message.sender.userName }} </span>
+                                    </mat-card-title>
+                                    <mat-card-content class="border border-primary" style="word-wrap: break-word; min-height: 50px;">
+                                        <span style="font-size: 100%; font-family: Arial, Helvetica, sans-serif;">{{ message.conteudo }}</span>
+                                    </mat-card-content> 
+                                    <button mat-menu-item (click)="sendMessage(message.sender.userName)">
+                                        <mat-icon>input</mat-icon>
+                                        <span>Responder</span>
+                                    </button>
+                                
+                            </mat-card>
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="Mensagens enviadas">
+                        <div class="col-md-3 mt-3" *ngFor="let message of sendMessages">
+                            <mat-card class="mat-card-live">
+                                <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 20px;">
+                                    <span style="text-transform: uppercase; font-size: 100%; color: rgb(4, 4, 179); line-height: 100%;"> {{ message.sender.userName }} </span>
+                                    </mat-card-title>
+                                    <mat-card-content class="border border-primary" style="word-wrap: break-word; min-height: 50px;">
+                                        <span style="font-size: 100%; font-family: Arial, Helvetica, sans-serif;">{{ message.conteudo }}</span>
+                                    </mat-card-content> 
+                                    <button mat-menu-item (click)="deleteMessage(message.id)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Apagar</span>
+                                    </button>
+                                
+                            </mat-card>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="My Posts">
+            <div class="row" style="width: 100%;">
+                <button mat-raised-button (click)="newPost()"><mat-icon>add</mat-icon>New Post</button>
+                <div class="col-md-3 mt-3" *ngFor="let post of userPosts">
+                    <mat-card class="mat-card-live">
+                        <mat-card-title class="mat-card-title-live" style="word-wrap: break-word; min-height: 35px;">
+                            <span style="text-transform: uppercase; font-size: 120%; color: rgb(4, 4, 179); line-height: 100%;">{{ post.titulo }}</span>
+                        </mat-card-title>
+                        <mat-card-content class="border border-primary" style="word-wrap: break-word; min-height: 250px;">
+                            <span style="font-size: 100%; font-family: Arial, Helvetica, sans-serif;">{{ post.conteudo }}</span>
+                        </mat-card-content>
+                        <mat-chip class="mat-chip-date">
+                            <span style="font-size: 0.75rem;">data do post: {{ post.data | localDateTime }}</span>
+                        </mat-chip>
+                        <div style="margin-left: 85%; margin-right: 15%;">
+                            <button mat-icon-button [matMenuTriggerFor]="menuMyPosts">
+                                <mat-icon style="height:45px !important; width: 45px !important; font-size:50px !important;">menu</mat-icon>
+                            </button>
+
+                            <mat-menu #menuMyPosts="matMenu">
+                                <button mat-menu-item color="primary">
+                                    <mat-icon>favorite</mat-icon>
+                                    <span>Likes: {{post.qtdLikes}}</span>
+                                </button>
+                                <button mat-menu-item (click)="deletePost(post.id)">
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete Post</span>
+                                </button>
+                                <button mat-menu-item (click)="updatePost(post.id)">
+                                    <mat-icon>update</mat-icon>
+                                    <span>Update Post</span>
+                                </button>
+                            </mat-menu>
+
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

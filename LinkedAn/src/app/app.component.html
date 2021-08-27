@@ -1,0 +1,15 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-1">
+            <a class="nav-item nav-link" routerLink="/">
+                <img src="assets/img/linkedan.png" alt="Enjoy this social media!">
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1 offset-md-11" *ngIf="currentUser">
+            <button (click)="logout()">Logout</button>
+        </div>
+    </div>
+</div>
+    <router-outlet></router-outlet>
